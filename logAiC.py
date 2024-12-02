@@ -111,7 +111,7 @@ async def on_message(message):
         content = content.replace(mention_str, f"@{user.display_name}")    
 
 # Format message as HTML
-    formatted_message = format_message_as_html(display_name, message.content, message.created_at)
+    formatted_message = format_message_as_html(display_name, content, message.created_at)
 
 # Append message to HTML file
     with open(LOG_FILE, "r+", encoding="utf-8") as file:
@@ -152,7 +152,7 @@ async def on_message_edit(before, after):
         content = content.replace(mention_str, f"@{user.display_name}")
 
 # Format bot's response as HTML
-    formatted_message = format_message_as_html(display_name, after.content, after.edited_at or after.created_at)
+    formatted_message = format_message_as_html(display_name, content, after.edited_at or after.created_at)
 
 # Append response to HTML file
     with open(LOG_FILE, "r+") as file:
