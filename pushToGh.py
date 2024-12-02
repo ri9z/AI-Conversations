@@ -112,5 +112,13 @@ if __name__ == "__main__":
 
         # Push updates to gh
         push_to_github()
-        print("Waiting for 5 minutes before the next run...\n")
-        time.sleep(300)
+        
+        # Delay to avoid flooding- there's a built-in post delay to avoid the bots flooding discord and being limited and making the chat scroll by too fast (it happened don't try it again) so I might as well put a delay here too
+        total_seconds = 300
+        for remaining in range(total_seconds, 0, -1):
+            mins, secs = divmod(remaining, 60)
+            timer = f"{mins:02d}:{secs:02d}"
+            print(f"Delay to avoid flooding: {timer}", end="\r")
+            await asyncio.sleep(1)
+
+        print("\nProgram Continues...")
