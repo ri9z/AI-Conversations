@@ -27,11 +27,11 @@ LOG_FILE = "/var/www/html/AiC/conversation_log.html"
 def backup_existing_log():
     if os.path.exists(LOG_FILE):
         
-        # Generate timestamped backup file name
+# Generate timestamped backup file name
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         backup_file = f"/var/www/html/AiC/conversation_log_{timestamp}.html"
         
-        # Rename the file
+# Rename the file
         os.rename(LOG_FILE, backup_file)
         print(f"Existing log file renamed to {backup_file}")
     else:
@@ -89,7 +89,7 @@ logger = logging.getLogger(__name__)
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user}!')
-    logger.info('Version 2.7')
+    logger.info('Version 2.8')
 
 
 
@@ -97,33 +97,39 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     
-    # Check if message is from allowed channel
+# Check if message is from allowed channel
     if message.channel.id != LOGGING_CHANNEL_ID:
         return  # Ignore messages from other channels
 
-    # Use display_name to log user's display name
+# Use display_name to log user's display name
     display_name = message.author.display_name
+    
+# Replace mentions with display names
+    content = message.content
+    for user in message.mentions:
+        mention_str = f"<@{user.id}>"
+        content = content.replace(mention_str, f"@{user.display_name}")    
 
-    # Format message as HTML
+# Format message as HTML
     formatted_message = format_message_as_html(display_name, message.content, message.created_at)
 
-    # Append message to HTML file
+# Append message to HTML file
     with open(LOG_FILE, "r+", encoding="utf-8") as file:
         lines = file.readlines()
 
-        # Insert new message before closing </ul>
+# Insert new message before closing </ul>
         for i, line in enumerate(lines):
             if "</ul>" in line:
                 lines.insert(i, formatted_message)
                 break
 
-        # Write updated content to the file
+# Write updated content to the file
         file.seek(0)
         file.writelines(lines)
 
     print(f"Logged message from {display_name}: {message.content}")
 
-    # Process other bot commands
+# Process other bot commands
     await bot.process_commands(message)
 
 
@@ -132,27 +138,33 @@ async def on_message(message):
 @bot.event
 async def on_message_edit(before, after):
     
-    # Check if the message is in the allowed channel
+# Check if the message is in the allowed channel
     if after.channel.id != LOGGING_CHANNEL_ID:
         return
 
-    # Use display_name for bot's display name
+# Use display_name for bot's display name
     display_name = after.author.display_name
+    
+# Replace mentions with display names
+    content = message.content
+    for user in message.mentions:
+        mention_str = f"<@{user.id}>"
+        content = content.replace(mention_str, f"@{user.display_name}")
 
-    # Format bot's response as HTML
+# Format bot's response as HTML
     formatted_message = format_message_as_html(display_name, after.content, after.edited_at or after.created_at)
 
-    # Append response to HTML file
+# Append response to HTML file
     with open(LOG_FILE, "r+") as file:
         lines = file.readlines()
 
-        # Insert new response before closing </ul>
+# Insert new response before closing </ul>
         for i, line in enumerate(lines):
             if "</ul>" in line:
                 lines.insert(i, formatted_message)
                 break
 
-        # Write updated content back to file
+# Write updated content back to file
         file.seek(0)
         file.writelines(lines)
 
