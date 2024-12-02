@@ -2,6 +2,9 @@ import os
 import subprocess
 import time
 import shutil
+import logging
+import asyncio
+
 
 ######### DEFINE FILE PATHS #########
 LOG_FILE = "/var/www/html/AiC/conversation_log.html"
