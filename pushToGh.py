@@ -3,7 +3,6 @@ import subprocess
 import time
 import shutil
 import logging
-import asyncio
 
 
 ######### DEFINE FILE PATHS #########
@@ -116,12 +115,14 @@ if __name__ == "__main__":
         # Push updates to gh
         push_to_github()
         
-        # Delay to avoid flooding- there's a built-in post delay to avoid the bots flooding discord and being limited and making the chat scroll by too fast (it happened don't try it again) so I might as well put a delay here too
-        total_seconds = 300
-        for remaining in range(total_seconds, 0, -1):
+        '''#wait 300 seconds because the the bots have a delay on their posts to avoid flooding the chat so the posts can actually be read
+        might as well put the same delay here. no reason to pointless contact github'''
+        delay_seconds = 300  # 5 minutes
+        print("Waiting 300 seconds since the bots have a delay to avoid flooding")
+        for remaining in range(delay_seconds, 0, -1):
             mins, secs = divmod(remaining, 60)
             timer = f"{mins:02d}:{secs:02d}"
-            print(f"Delay to avoid flooding: {timer}", end="\r")
-            await asyncio.sleep(1)
-
-        print("\nProgram Continues...")
+            print(f"Time left: {timer}", end="\r", flush=True)
+            time.sleep(1)
+        
+        print("\nThe program will continue...\n")
