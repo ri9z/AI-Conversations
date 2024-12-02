@@ -68,33 +68,36 @@ def setup_git_identity():
 
 def push_to_github():
     try:
-        # Change to repo dir
+        # Change to the repository directory
         os.chdir(REPO_DIR)
         print(f"Changed directory to {REPO_DIR}")
 
-        # Set git id if not configured
+        # Set up Git identity if not configured
         setup_git_identity()
 
-        # Check status of repo
+        # Check the status of the repository
         print("Checking repository status...")
         subprocess.run(["git", "status"], check=True)
 
-        # Stage changes
+        # Add all changes to the staging area
         print("Adding changes to staging...")
         subprocess.run(["git", "add", "."], check=True)
 
-        # Commit changes with a default message
+        # Commit the changes with a default message
         commit_message = "chat transcript updates"
         print(f"Committing changes with message: {commit_message}")
         subprocess.run(["git", "commit", "-m", commit_message], check=True)
 
-        # Push changes to gh
+        # Push the changes to GitHub
         print("Pushing changes to GitHub...")
-        subprocess.run(["git", "push"], check=True)
+        subprocess.run(["git", "push", "-u", "origin", "main"], check=True)  # Explicitly specify the remote and branch
         print("Changes pushed successfully.")
 
     except subprocess.CalledProcessError as e:
-        print(f"Error during GitHub operation: {e}")
+        if "403" in str(e):
+            print("Error: Permission denied. Check your GitHub credentials.")
+        else:
+            print(f"Error during GitHub operation: {e}")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
