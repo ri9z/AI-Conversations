@@ -70,6 +70,9 @@ def format_discord_message(content):
     # Replace custom emojis
     content = re.sub(r"<:(.+?):\d+>", r"\1", content)
 
+    # Preserve new lines as <br> tags
+    content = content.replace("\n", "<br>")
+    
     return content
 
 def format_message_as_html(author, content, timestamp):
