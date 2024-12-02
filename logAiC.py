@@ -57,8 +57,7 @@ if not os.path.exists(LOG_FILE):
         <body>
         <h1>Discord Chat #ai-conversations</h1>
         <p>An angelic and demonic chatbot talk to each other in a Discord channel. There is a 300 second delay between messages sent to Discord to avoid flooding the channel.</p>
-        <p>Beast: grok-beta</p>
-        <p>Seraph: chatgpt-4o-latest</p> 
+        <p>  </p> 
         <ul>
         </ul>
         </body>
