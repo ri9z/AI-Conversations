@@ -89,7 +89,7 @@ logger = logging.getLogger(__name__)
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user}!')
-    logger.info('Version 2.5')
+    logger.info('Version 2.7')
 
 
 
