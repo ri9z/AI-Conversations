@@ -3,30 +3,56 @@ import subprocess
 import time
 import shutil
 
-# Paths for the log file and repository
-LOG_FILE = "/var/www/html/conversation_log.html"
-DEST_FILE = "/home/ri9z/AI-Conversations/index.html"
+######### DEFINE FILE PATHS #########
+LOG_FILE = "/var/www/html/AiC/conversation_log.html"
+SOURCE_DIR = "/var/www/html/AiC/"
+DEST_LOG_FILE = "/home/ri9z/AI-Conversations/index.html"
+DEST_DIR= "/home/ri9z/AI-Conversations/chatlogs/conversation_log.html"
 REPO_DIR = "/home/ri9z/AI-Conversations"
 
-def copy_log_file():
-    
-    # Copy conversation_log.html to index.html in the repo directory.
-    
+
+
+######### COPY FILES FROM HTML DIR TO GITHUB REPO DIR #########
+
+# Copies current realtime log to index.html in gh repo directory
+def copy_current():
     try:
-        print(f"Copying {LOG_FILE} to {DEST_FILE}")
-        shutil.copy(LOG_FILE, DEST_FILE)
+        print(f"Copying {LOG_FILE} to {DEST_LOG_FILE}")
+        shutil.copy(LOG_FILE, DEST_LOG_FILE)
         print("File copied successfully.")
     except FileNotFoundError:
         print(f"Error: {LOG_FILE} not found. Skipping copy.")
     except Exception as e:
         print(f"Error copying file: {e}")
 
+# Copies historic logs to chatlogs dir in gh repo
+def copy_history():
+    try:
+        # Ensure destination dir exists
+        if not os.path.exists(DEST_DIR):
+            os.makedirs(DEST_DIR)
+            print(f"Created destination directory: {DEST_DIR}")
+
+        # Copy files from source
+        for item in os.listdir(SOURCE_DIR):
+            source_path = os.path.join(SOURCE_DIR, item)
+            dest_path = os.path.join(DEST_DIR, item)
+
+            if os.path.isfile(source_path):  # Copy files only
+                shutil.copy2(source_path, dest_path)
+                print(f"Copied: {source_path} -> {dest_path}")
+            else:
+                print(f"Skipping directory: {source_path}")
+    except Exception as e:
+        print(f"Error copying files: {e}")
+
+
+######### GITHUB #########
 def setup_git_identity():
     
-    # Check git user identity
-    
+    # Confirm git user identity is configured.
     try:
-        # Check if user.name and user.email are set
+        # Check user.name, user.email
         name = subprocess.run(['git', 'config', 'user.name'], cwd=REPO_DIR, capture_output=True, text=True).stdout.strip()
         email = subprocess.run(['git', 'config', 'user.email'], cwd=REPO_DIR, capture_output=True, text=True).stdout.strip()
 
@@ -42,27 +68,27 @@ def setup_git_identity():
 
 def push_to_github():
     try:
-        # Change to the repo directory
+        # Change to repo dir
         os.chdir(REPO_DIR)
         print(f"Changed directory to {REPO_DIR}")
 
-        # Set identity if not configured
+        # Set git id if not configured
         setup_git_identity()
 
-        # Check the status of repo
-        print("Checking repo status...")
+        # Check status of repo
+        print("Checking repository status...")
         subprocess.run(["git", "status"], check=True)
 
-        # Add changes to staging area
+        # Stage changes
         print("Adding changes to staging...")
         subprocess.run(["git", "add", "."], check=True)
 
-        # Commit changes with default message
+        # Commit changes with a default message
         commit_message = "chat transcript updates"
         print(f"Committing changes with message: {commit_message}")
         subprocess.run(["git", "commit", "-m", commit_message], check=True)
 
-        # Push to GitHub
+        # Push changes to gh
         print("Pushing changes to GitHub...")
         subprocess.run(["git", "push"], check=True)
         print("Changes pushed successfully.")
@@ -72,10 +98,16 @@ def push_to_github():
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
+######### LOOP #########
 if __name__ == "__main__":
-    while True:  
+    while True:
         print("\n--- Running GitHub Sync Script ---")
-        copy_log_file()
+        
+        copy_current()
+
+        copy_history()
+
+        # Push updates to gh
         push_to_github()
         print("Waiting for 5 minutes before the next run...\n")
-        time.sleep(300)  # 5 minutes = 300 seconds
+        time.sleep(300)

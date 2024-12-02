@@ -6,10 +6,12 @@ from discord.ext import commands
 
 
 
-######### SET UP DISCORD #########
-DISCORD_TOKEN = 'PUT DISCORD TOKEN HERE'
+######### API KEYS #########
+DISCORD_TOKEN = os.getenv("DISCORD_BEAST_TOKEN")
 
-# Intents for Discord bot 
+
+
+######### INTENTS FOR DISCORD BOT #########
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -17,10 +19,26 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 
 ######### HTML LOG FILE #########
-LOG_FILE = "/var/www/html/conversation_log.html"
+LOG_FILE = "/var/www/html/AiC/conversation_log.html"
 
-######### CHANNEL RESTRICTIONS #########
-LOGGING_CHANNEL_ID = PUT DISCORD CHANNEL ID HERE
+
+
+######### RENAME EXISTING LOG FILE #########
+def backup_existing_log():
+    if os.path.exists(LOG_FILE):
+        
+        # Generate timestamped backup file name
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        backup_file = f"/var/www/html/AiC/conversation_log_{timestamp}.html"
+        
+        # Rename the file
+        os.rename(LOG_FILE, backup_file)
+        print(f"Existing log file renamed to {backup_file}")
+    else:
+        print(f"No existing log file found at {LOG_FILE}")
+
+# Run the backup function once at the start of script
+backup_existing_log()
 
 
 
@@ -38,9 +56,9 @@ if not os.path.exists(LOG_FILE):
         <meta http-equiv='pragma' content='no-cache'>
         <body>
         <h1>Discord Chat #ai-conversations</h1>
-        <p>An angelic and demonic chatbot talk to each other in a Discord channel. There is a 300 second delay between messages sent to Discord to avoid flooding the chat.</p>
+        <p>An angelic and demonic chatbot talk to each other in a Discord channel. There is a 300 second delay between messages sent to Discord to avoid flooding the channel.</p>
         <p>Beast: grok-beta</p>
-        <p>Seraph: gpt-4o-latest</p> 
+        <p>Seraph: chatgpt-4o-latest</p> 
         <ul>
         </ul>
         </body>
@@ -49,17 +67,19 @@ if not os.path.exists(LOG_FILE):
 
 
 
+######### CHANNEL RESTRICTIONS #########
+LOGGING_CHANNEL_ID = 1310715121479192649
+
+
+
 ######### FORMAT MESSAGE AS HTML #########
 def format_message_as_html(author, content, timestamp):
-    """
-    Format a Discord message as an HTML list item.
-    """
     timestamp_str = timestamp.strftime("%Y-%m-%d %H:%M:%S")
     return f"<li><b>{author}:</b> {content} <i>({timestamp_str})</i></li>\n"
 
 
 
-######## CONFIGURE LOGGING #########
+######### CONFIGURE LOGGING #########
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
@@ -69,62 +89,76 @@ logger = logging.getLogger(__name__)
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user}!')
+    logger.info('Version 2.5')
+
 
 
 ######### LOG MESSAGES #########
 @bot.event
 async def on_message(message):
-    # Check if the message is from the allowed channel
+    
+    # Check if message is from allowed channel
     if message.channel.id != LOGGING_CHANNEL_ID:
         return  # Ignore messages from other channels
 
-    # Format the message as HTML
-    formatted_message = format_message_as_html(message.author.name, message.content, message.created_at)
+    # Use display_name to log user's display name
+    display_name = message.author.display_name
 
-    # Append the message to the HTML file
+    # Format message as HTML
+    formatted_message = format_message_as_html(display_name, message.content, message.created_at)
+
+    # Append message to HTML file
     with open(LOG_FILE, "r+", encoding="utf-8") as file:
         lines = file.readlines()
 
-        # Insert the new message before the closing </ul> tag
+        # Insert new message before closing </ul>
         for i, line in enumerate(lines):
             if "</ul>" in line:
                 lines.insert(i, formatted_message)
                 break
 
-        # Write the updated content back to the file
+        # Write updated content to the file
         file.seek(0)
         file.writelines(lines)
 
-    print(f"Logged message from {message.author}: {message.content}")
+    print(f"Logged message from {display_name}: {message.content}")
 
     # Process other bot commands
     await bot.process_commands(message)
 
+
+
 ######### LOG BOT'S RESPONSES #########
 @bot.event
 async def on_message_edit(before, after):
+    
     # Check if the message is in the allowed channel
     if after.channel.id != LOGGING_CHANNEL_ID:
-        return  # Ignore edits in other channels
+        return
 
-    # Format the bot's response as HTML
-    formatted_message = format_message_as_html(after.author.name, after.content, after.edited_at or after.created_at)
+    # Use display_name for bot's display name
+    display_name = after.author.display_name
 
-    # Append the response to the HTML file
+    # Format bot's response as HTML
+    formatted_message = format_message_as_html(display_name, after.content, after.edited_at or after.created_at)
+
+    # Append response to HTML file
     with open(LOG_FILE, "r+") as file:
         lines = file.readlines()
 
-        # Insert the new response before the closing </ul> tag
+        # Insert new response before closing </ul>
         for i, line in enumerate(lines):
             if "</ul>" in line:
                 lines.insert(i, formatted_message)
                 break
 
-        # Write the updated content back to the file
+        # Write updated content back to file
         file.seek(0)
         file.writelines(lines)
 
     print(f"Logged bot response: {after.content}")
+
+
 
 ######### RUN THE BOT #########
 bot.run(DISCORD_TOKEN)
