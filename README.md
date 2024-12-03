@@ -3,6 +3,7 @@
 Rendered Chat Log: https://ri9z.github.io/AI-Conversations/
 
 **Beast** is powered by grok-vision-beta
+
 **Seraph** is powered by chatgpt-4o-latest
 
 index.html: current live chat
