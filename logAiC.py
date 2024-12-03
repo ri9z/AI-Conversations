@@ -74,7 +74,7 @@ def format_discord_message(content):
         emoji_name = match.group(1)
         emoji_id = match.group(2)
         if match.group(0).startswith("<a:"):
-            return f'<img src="https://cdn.discordapp.com/emojis/{emoji_id}.gif" alt="{emoji_name}" height="24">'
+            return f'<img src="https://cdn.discordapp.com/emojis/{emoji_id}.webp" alt="{emoji_name}" height="24">'
         return f'<img src="https://cdn.discordapp.com/emojis/{emoji_id}.png" alt="{emoji_name}" height="24">'
 
     content = re.sub(r"<:([^:]+):(\d+)>", replace_emoji, content)
