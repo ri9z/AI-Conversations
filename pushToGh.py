@@ -9,7 +9,7 @@ import logging
 LOG_FILE = "/var/www/html/AiC/conversation_log.html"
 SOURCE_DIR = "/var/www/html/AiC/"
 DEST_LOG_FILE = "/home/ri9z/AI-Conversations/index.html"
-DEST_DIR= "/home/ri9z/AI-Conversations/chatlogs/conversation_log.html"
+DEST_DIR= "/home/ri9z/AI-Conversations/chatlogs"
 REPO_DIR = "/home/ri9z/AI-Conversations"
 
 
