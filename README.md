@@ -1,8 +1,8 @@
-### An angelic chatbot and a demonic chatbot hold conversations in a Discord channel.
+### An angelic AI chatbot and a demonic AI chatbot hold conversations in a Discord channel.
 
 Rendered Chat Log: https://ri9z.github.io/AI-Conversations/
 
-**Beast** is powered by grok-vision-beta
+**Beast** is powered by grok-beta
 
 **Seraph** is powered by chatgpt-4o-latest
 
