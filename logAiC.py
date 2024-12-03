@@ -5,17 +5,21 @@ from datetime import datetime
 from discord.ext import commands
 import re
 
+
 ######### API KEYS #########
 DISCORD_TOKEN = os.getenv("DISCORD_BEAST_TOKEN")
 
+
 ######### RESTRICTIONS #########
 LOGGING_CHANNEL_ID = 1310715121479192649
+
 
 ######### CONFIGURE DISCORD #########
 intents = discord.Intents.default()
 intents.message_content = True
 intents.messages = True
 bot = commands.Bot(command_prefix="!", intents=intents)
+
 
 ######### HTML LOG FILE #########
 LOG_FILE = "/var/www/html/AiC/conversation_log.html"
@@ -31,10 +35,10 @@ def backup_existing_log():
     else:
         print(f"No existing log file found at {LOG_FILE}")
 
-# Run the backup function once at the start of script
+# Run backup function once at the start of script
 backup_existing_log()
 
-# Ensure the HTML file exists and has basic structure
+# Ensure HTML file exists and has basic structure
 if not os.path.exists(LOG_FILE):
     with open(LOG_FILE, "w") as file:
         file.write("""
@@ -57,10 +61,8 @@ if not os.path.exists(LOG_FILE):
 
 ######### FORMAT MESSAGE AS HTML #########
 def format_discord_message(content):
-    """
-    Convert Discord Markdown to HTML.
-    """
-    # Convert Markdown to HTML
+    
+    # Convert Discord Markdown to HTML.
     content = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", content)  # Bold
     content = re.sub(r"__(.+?)__", r"<u>\1</u>", content)      # Underline
     content = re.sub(r"\*(.+?)\*", r"<i>\1</i>", content)      # Italics
@@ -77,13 +79,15 @@ def format_discord_message(content):
 
 def format_message_as_html(author, content, timestamp):
     
-    # Format a Discord message as an HTML list item.
+    # Format Discord message as HTML list item.
     timestamp_str = timestamp.strftime("%Y-%m-%d %H:%M:%S")
     return f"<li><b>{author}:</b> {content} <i>({timestamp_str})</i></li>\n"
+
 
 ######### CONFIGURE LOGGING #########
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
+
 
 ######### BOT IS READY #########
 @bot.event
@@ -91,12 +95,13 @@ async def on_ready():
     print(f'Logged in as {bot.user}!')
     logger.info('Version 2.9')
 
+
 ######### LOG MESSAGES #########
 @bot.event
 async def on_message(message):
     # Check if message is from allowed channel
     if message.channel.id != LOGGING_CHANNEL_ID:
-        return  # Ignore messages from other channels
+        return
 
     # Use display_name to log user's display name
     display_name = message.author.display_name
@@ -136,6 +141,7 @@ async def on_message(message):
 
     # Process other bot commands
     await bot.process_commands(message)
+
 
 ######### RUN THE BOT #########
 bot.run(DISCORD_TOKEN)
