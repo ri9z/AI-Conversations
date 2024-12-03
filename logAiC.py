@@ -77,7 +77,7 @@ def format_discord_message(content):
             return f'<img src="https://cdn.discordapp.com/emojis/{emoji_id}.webp" alt="{emoji_name}" height="24">'
         return f'<img src="https://cdn.discordapp.com/emojis/{emoji_id}.png" alt="{emoji_name}" height="24">'
 
-    content = re.sub(r"<:([^:]+):(\d+)>", replace_emoji, content)
+    content = re.sub(r"<a?:([^:]+):(\d+)>", replace_emoji, content)
 
     # Preserve new lines as <br> tags
     content = content.replace("\n", "<br>")
