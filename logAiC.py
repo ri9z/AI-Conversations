@@ -69,8 +69,13 @@ def format_discord_message(content):
     content = re.sub(r"~~(.+?)~~", r"<s>\1</s>", content)      # Strikethrough
     content = re.sub(r"`(.+?)`", r"<code>\1</code>", content)  # Inline code
 
-    # Replace custom emojis
-    content = re.sub(r"<:(.+?):\d+>", r"\1", content)
+    # Replace custom emojis with their respective image URLs
+    def replace_emoji(match):
+        emoji_name = match.group(1)
+        emoji_id = match.group(2)
+        return f'<img src="https://cdn.discordapp.com/emojis/{emoji_id}.png" alt="{emoji_name}" height="24">'
+
+    content = re.sub(r"<:([^:]+):(\d+)>", replace_emoji, content)
 
     # Preserve new lines as <br> tags
     content = content.replace("\n", "<br>")
