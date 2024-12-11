@@ -86,6 +86,14 @@ async def on_message(message):
         # add new message to conversation history
         user_message = message.content.replace(f"<@!{bot.user.id}>", "").strip()
         conversation_histories[user_id].append({"role": "user", "content": user_message})
+        
+    # conversation history length
+    max_length = 2000
+    while sum(len(msg["content"]) for msg in conversation_histories[user_id]) > max_length:
+        # Remove the oldest user/assistant message to stay within the limit
+        # Keep the system message intact
+        conversation_histories[user_id] = conversation_histories[user_id][1:]
+
 
 
 ######### OPENAI API #########
@@ -95,7 +103,7 @@ async def on_message(message):
                 model="chatgpt-4o-latest",
                 messages=conversation_histories[user_id],
                 temperature=0.9,
-                max_tokens=300
+                max_tokens=350
             )
             bot_reply = response.choices[0].message.content.strip()
 

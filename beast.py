@@ -85,6 +85,13 @@ async def on_message(message):
     # add the new message to the conversation history
     user_message = message.content.strip()
     conversation_histories[user_id].append({"role": "user", "content": user_message})
+    
+        # conversation history length
+    max_length = 2000
+    while sum(len(msg["content"]) for msg in conversation_histories[user_id]) > max_length:
+        # Remove the oldest user/assistant message to stay within the limit
+        # Keep the system message intact
+        conversation_histories[user_id] = conversation_histories[user_id][1:]
 
 
 ######### xAI API ######### 
