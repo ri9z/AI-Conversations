@@ -95,7 +95,7 @@ async def on_message(message):
         try:
             logger.info("Calling OpenAI API")
             response = openai.chat.completions.create(
-                model="o1-mini",
+                model="gpt-4o-mini",
                 messages=conversation_histories[user_id],
                 temperature=0.9,
                 max_tokens=300
