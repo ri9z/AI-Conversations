@@ -71,7 +71,7 @@ async def on_message(message):
         return
 
     # Check if the message is from an allowed channel or user
-    if message.channel.id not in ALLOWED_CHANNEL_IDS and message.author.id not in ALLOWED_USER_IDS:
+    if message.channel.id not in ALLOWED_CHANNEL_IDS or message.author.id not in ALLOWED_USER_IDS:
         logger.debug(f"Ignoring message from channel {message.channel.id} by user {message.author.id}")
         return
 
