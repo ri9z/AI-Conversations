@@ -45,8 +45,8 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-ALLOWED_CHANNEL_ID = 1310715121479192649 #ai-conversations channel
-ALLOWED_USER_ID = 1310145986529722438 #Seraph's ID
+ALLOWED_CHANNEL_IDS = [1310715121479192649]
+ALLOWED_USER_IDS = [1310145986529722438]
 
 
 ######### LOGGING #########
@@ -66,9 +66,9 @@ async def on_message(message):
     if message.author == bot.user:
         return
 
-    # message restrictions
-    if message.channel.id != ALLOWED_CHANNEL_ID or message.author.id != ALLOWED_USER_ID:
-        logger.debug(f"Ignoring message from channel {message.channel.id}")
+    # Check if the message is from an allowed channel or user
+    if message.channel.id not in ALLOWED_CHANNEL_IDS or message.author.id not in ALLOWED_USER_IDS:
+        logger.debug(f"Ignoring message from channel {message.channel.id} by user {message.author.id}")
         return
 
     # log the received message
